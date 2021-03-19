@@ -1,0 +1,675 @@
+---
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+#**Introduction**
+
+$\ $
+
+L’objet de ce mémoire est de présenter les aspects théoriques et généraux de ce qu’on appelle communément l'analyse discriminante et en particulier l'analyse discriminante linéaire.
+
+En quoi consiste l'analyse discriminante?
+
+En termes simples, l'analyse discriminante est une méthode permettant de décrire un ensemble d'individus et de prédire une variable qualitative à k classes, à l’aide de variables prédictives, généralement numériques. Donc, l’analyse discriminante a pour but de déterminer des différences entre des groupes de données afin d'éclairer des décisions et ainsi développer des solutions efficaces.
+
+Les objectifs sont doubles:
+
+- d'une part, il y a un objectif *descriptif*, c'est-à-dire qu'on cherche les combinaisons linéaires de variables qui permettent de séparer le mieux possible les k catégories de variables qualitatives et ainsi donner une répresentation graphique, qui rende compte au mieux de cette séparation.
+
+- d'autre part, l'objectif est *décisionnel*, c'est-à-dire qu'on cherche à décider dans quelle classe affecter un nouvel individu pour lequel on connaît les valeurs des variables prédictives. Nous étudierons cet aspect dans ce rapport, puisque l'analyse discriminante linéaire se trouve dans l'approche décisionnelle.
+
+Dans le cadre professionnel, les champs d'application de l'analyse discriminante sont multiples. Nous pouvons citer quelques domaines:
+
+  - **Médecine**: à partir de mesures de laboratoire, on cherche une fonction discriminante permettant de prédire au mieux le type de maladie d'un patient, ou de son évolution afin d'orienter le traitement.
+     
+  - **Finance**: prévision du comportement et du risque des démandeurs de crédit par exemple - préoccupation primordiale des banques -. En effet, l'usage de l'analyse discriminante au sein des banques et assurances s'avère très utile et efficace.
+     
+Ce rapport rassemble une explication détaillée de deux méthodes décisionnelles: 
+    l'analyse discriminante linéaire puis l'analyse discriminante quadratique -appuyée de preuves et d'exemples concrets-.
+Enfin, nous commenterons les avantages et les limites de ces outils de décision.
+
+Notre problématique est donc la suivante: quels sont les liens et les différences existants entre l'analyse discriminante linéaire et l'analyse discriminante quadratique? Quelle est l'analyse la plus optimale?
+
+Dans ce rapport, nous tâcherons donc de répondre in fine à cette problématique.
+
+### **Préliminaires**
+
+$\ $
+
+On dispose d'un échantillon de n individus sur lequel on a observé des variables explicatives 
+$X_i = (X_i^1  ,...,X_i^p)_{1≤i≤n}$ et une variable qualitative $Y_i \in {1,...,K}$ qui correspond à chaque classe de l'individu i. 
+
+A l'aide de ces variables, on va prédire un nouvel individu $n+1$ en tenant compte de ses propriétés que l'on note $(X_{n+1}^1  ,...,X_{n+1}^p)$.
+
+*Notations*:
+
+- $C_1, ..., C_K$ sont les classes.
+
+- $(\pi_1,...,\pi_K)$ est la distribution de Y où $\pi_k = \mathbb P(Y=k)$ est la probabilité d'appartenir à la classe $C_k$ et $\sum_{k=1}^K \pi_k=1$.
+
+- $f_k$ est la densité conditionnelle du vecteur $X \in \mathbb R^p$ sachant que l'on est dans la classe $C_k$.
+
+- $\mu_k \in \mathbb R^p$ est le vecteur des moyennes théoriques dans un cas gaussien.
+
+- $\Sigma_k$ est la matrice de variance-covariance théorique dans un cas gaussien.
+
+$\ $
+
+#**I. Analyse Discriminante Linéaire**
+$\ $
+
+##**a) Présentation de l'Analyse Discriminante Linéaire**
+$\ $
+
+L'analyse discriminante linéaire a pour objectif d'expliquer et de prédire les valeurs d'une variable qualitative, notée Y, à partir de variables explicatives quantitatives et/ou qualitatives, notées $X=(X_1,.....X_p)$.
+
+Cette méthode s'appuie sur deux hypothèses:
+
+- les densités conditionnelles sont gaussiennes, c'est-à-dire que: 
+$$f_k(x)= \frac {1}{ (\sqrt{2 \pi})^p  \sqrt{det \Sigma_k} } exp(- \frac{1}{2}* \! ^t(x - \mu_k)\Sigma_k^{-1} (x - \mu_k) )$$
+
+- l'homoscédasticité, c'est-à-dire qu'il y a égalité des matrices de variances-covariances conditionnelles:
+
+  $$\Sigma_1=...=\Sigma_K=\Sigma$$
+
+L'ADL peut être présentée à travers l'approche bayesienne, qui consiste à modéliser la probabilité d'appartenance à une certaine classe et donc à lui affecter une nouvelle observation.
+
+*Formule de Bayes*:
+
+  $$\mathbb P(Y=k|X=x)  = \frac{\pi_kf_k(x)}{\sum_{k=1}^K \pi_kf_k(x) }$$
+avec:
+
+- $f_k$ la densité conditionnelle du vecteur $X \in \mathbb R^p$ sachant que l'on est dans la classe $C_k$
+
+- $\pi_k=\mathbb P(Y=k)$ la probabilité d'appartenir à la classe $C_k$ et $\sum_{k=1}^K\pi_k=1$ 
+
+
+
+$\ $
+
+Afin de trouver la probabilité conditionnelle - $\mathbb P(Y=k|X=x)$ - la plus grande, une méthode consiste à chercher le maximum de vraisemblance:
+
+  $$\hat Y = \underset{1≤k≤K}{\text{argmax}} \ \mathbb P(Y=k|X) \ \Longleftrightarrow \ \hat Y = \underset{1≤k≤K}{\text{argmax}} \ log \mathbb P(Y=k|X) \ \ (1)$$ 
+
+
+$\ $
+
+**Analyse de la vraisemblance dans le cas où il y a deux classes (K = 2)**
+      
+$\ $      
+Soit un échantillon dans lequel il existe deux classes, notées $C_k$ et $C_l$.
+Il suffit d'analyser le log-ratio suivant, que l'on note R:
+
+$$R= log \frac{\mathbb P(Y=k | X=x)}{\mathbb P(Y=l | X=x)}= log\frac{\pi_k}{\pi_l}+log\frac{f_k(x)}{f_l(x)}$$
+
+$$R= log\frac{\pi_k}{\pi_l}+ \! ^tx\Sigma^{-1}(\mu_k-\mu_l)-\frac{1}{2}* \! ^t\mu_k\Sigma^{-1}\mu_k + \frac{1}{2}* \! ^t\mu_l \Sigma^{-1} \mu_l$$
+$\ $
+    
+- Si $\ R$ > 0, alors $P(Y=k | X=x)>\mathbb P(Y=l | X=x)$. Donc Y appartient à la classe $C_k$.
+
+- Si $\ R$ < 0, alors $P(Y=k | X=x)<\mathbb P(Y=l | X=x)$. Donc Y appartient à la classe $C_l$.
+
+$\ $
+
+**Analyse de la vraisemblance dans le cas où il y a plus de deux classes (K>2)**
+   
+$\ $
+
+Une autre manière de résoudre (1) serait d'utiliser la fonction linéaire discriminante.
+Cela revient à choisir:
+
+$$\hat Y = \underset{1≤k≤K}{\text{argmax}}\ \delta_k(x) \ (2)$$
+
+**Preuve **
+$\ $
+
+On sait que:
+
+$$\mathbb P(Y=k|X=x)  = \frac{\pi_kf_k(x)}{\sum_{l=1}^K \pi_lf_l(x) }$$
+Comme $\sum_{l=1}^K \pi_lf_l(x)$ ne dépend pas de k, alors:
+$$\hat Y = \underset{1≤k≤K}{\text{argmax}} \ \pi_k f_k(x) $$
+
+Ici: $$\pi_k f_k(x) =\pi_k \frac {1}{ (\sqrt{2 \pi})^p\sqrt{det \Sigma} } exp(-\frac{1}{2}* \! ^t(x - \mu_k)\Sigma^{-1}(x - \mu_k) )$$
+
+En passant au logarithme, on obtient:
+$$\log \pi_kf_k(x) = \log\pi_k - \frac{p}{2}log(2\pi)- \frac{1}{2}\log(det\Sigma)-\frac{1}{2}*\! ^t(x-\mu_k)\Sigma^{-1}(x-\mu_k) $$
+Comme $\frac{p}{2}log(2\pi)$ et $\frac{1}{2}log(det\Sigma)$ sont constantes, alors le problème (1) devient:
+$$\hat Y = \underset{1≤k≤K}{\text{argmax}} (\ log (\pi_k)- \frac{1}{2}*\! ^t(x-\mu_k)\Sigma^{-1}(x-\mu_k)  \ )$$
+En développant, on retrouve: 
+$$\hat Y = \underset{1≤k≤K}{\text{argmax}} (\ log(\pi_k) + \! ^tx.\Sigma^{-1}\mu_k- \frac{1}{2}*\! ^t\mu_k\Sigma^{-1}\mu_k \ )$$
+Ainsi, on trouve finalement:
+$$\hat Y = \underset{1≤k≤K}{\text{argmax}}\ \delta_k(x) \ (2) \\  avec: \ \ \delta_k(x)= log(\pi_k) + x.\Sigma^{-1}\mu_k- \frac{1}{2}*\! ^t\mu_k\Sigma^{-1}\mu_k$$
+**Les estimations**
+
+En pratique, on ne connaît ni les $(\pi_k)_{k=1}^K$, ni les $(\mu_k)_{i=1}^K$, ni $\Sigma$. Il faut donc les estimer par:
+
+- $\hat \pi_k = \frac{n_k}{n}$ où $n_k = \sum_{i=1}^k \mathbb 1_{Y_i=k}$ 
+
+- $\hat \mu_k= \frac{1}{n_k} \sum_{i \in C_k} X_i$  
+
+- $\hat \Sigma= \frac{1}{n-K} \sum_{k=1}^K \sum_{i \in C_k}(X_i- \hat \mu_k) \ ^t(X_i-\hat \mu_k)$ (Estimateur sans biais)
+
+$\ $
+
+## **b) Algorithme de l'ADL appliqué à la base de données Iris** 
+
+$\ $
+
+Nous nous intéressons dans cette étude à la base de données **Iris de Fisher**, qui constitue un dataset de référence pour l'analyse discriminante. 
+Ce jeu de données contient 50 fleurs de chacune des 3 espèces de fleurs (Setosa, Virginica et Versicolor) - soit 150 fleurs - et donne les mesures en centimètres des longueurs et largeurs des sépales et pétales.
+
+Les variables quantitatives sont: 
+
+- *Sepal.Length*: Longueur des sépales
+- *Sepal.Width*: Largeur des sépales
+- *Petal.Length*: Longueur des pétales
+- *Petal.Width*: Largeur des pétales
+
+La variable qualitative est:
+
+- *Species*: Espèces de fleurs
+
+
+$\ $
+
+Nous prenons 110 fleurs parmi 150 afin de constituer la base de données d'apprentissage. 
+L'objectif est d'essayer de prédire le type d'espèce (setosa, virginica, versicolor) des 40 fleurs restantes, grâce à l'analyse discriminante linéaire.
+
+$\ $
+
+```{r,  echo=FALSE, message= FALSE,warning=FALSE}
+
+library(matlib); library(ade4); library(adegraphics); library(rgl) ; library(tidyverse); library(cowplot);
+library(MASS); library(klaR);
+
+## La base de données est Iris
+data_iris<-iris
+
+## Pour chaque classe de la variable "Species", on attribue un numéro afin de faciliter le programmme
+# 1:setosa ; 2:versicolor; 3:virginica
+val_123<-data.frame(as.numeric(data_iris$Species))
+
+##  Maintenant on modifie "Species" dans la base de données
+data_iris<-data.frame(iris[,-5] , val_123)
+
+## On prend 110 individus parmis 150 de manière aléatoire
+echa <- sample(1:150,110)
+
+## Les variables:
+val_predicteur<-data_iris[echa,] # 110 individus
+
+val_non_predicteur <-data_iris[-echa,] # 40 individus
+
+## Représentation graphique des 110 individus
+
+b1<-ggplot(iris[echa,], aes(x= Sepal.Width, y=Sepal.Length, col= Species) ) + geom_point(aes(shape=Species)) 
+b2<-ggplot(iris[echa,], aes(x= Petal.Width, y=Petal.Length, col= Species) ) + geom_point(aes(shape=Species)) 
+b3<-ggplot(iris[echa,], aes(x= Petal.Width, y=Sepal.Length, col= Species) ) + geom_point(aes(shape=Species)) 
+b4<-ggplot(iris[echa,], aes(x= Sepal.Width, y=Petal.Width, col= Species) ) + geom_point(aes(shape=Species))
+
+plot_grid(b1, b2, b3,b4, ncol =2, nrow = 2)+ggtitle("Représentation des 110 fleurs par rapport à ses variables explicatives")+theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+$\ $
+
+Cette analyse montre qu'il existe une séparation flagrante entre les espèces(setosa, virginica, versicolor), en fonction de leur caractéristique( longueur sépales, largeur sépales, longueur pétales, largeur pétales). 
+Cependant, nous pouvons voir que dans le premier graphique, comparant la longueur et largeur des sépales, cette séparation n'est pas constatée entre les virginica et les versicolor.
+
+Maintenant, nous allons analyser la distribution des 110 fleurs par rapport à leurs variables explicatives afin de pouvoir se placer dans les hypothèses de l'ADL (densités gaussiennes et homoscédasticité).
+
+$\ $
+
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+
+a1<-ggplot(iris[echa,])+geom_density(aes( x=Petal.Length, fill=Species ),alpha=0.25)
+a3<-ggplot(iris[echa,])+geom_density(aes( x=Petal.Width, fill=Species ),alpha=0.25)
+a2<-ggplot(iris[echa,])+geom_density(aes( x=Sepal.Length, fill=Species ),alpha=0.25)
+a4<-ggplot(iris[echa,])+geom_density(aes( x=Sepal.Width, fill=Species ),alpha=0.25)
+
+plot_grid(a1, a2, a3,a4, ncol =2, nrow = 2)+ggtitle("Distribution des fleurs par rapport à ses variables explicatives")+
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+$\ $
+
+On constate que les densités sont semblables à une densité gaussienne, on peut donc supposer l'hypothèse de gaussianité.
+
+De plus, on remarque que les variances des fleurs "versicolor" et "virginica" sont quasiment les mêmes, contrairement à la variance des fleurs "setosa". 
+
+Même si l'hypothèse d'homoscédasticité n'est pas vérifiée, on la supposera afin de pouvoir utiliser l'ADL et de connaître son efficacité.
+
+$\ $
+
+Afin de représenter les frontières de décision, on utilise la commande "partimat" du package "KlarR".
+
+$\ $
+
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+
+partimat(Species~., data=iris[echa,], method='lda',main="Frontières de décision pour l'ADL" )
+
+```
+
+$\ $
+
+On constate que chaque graphique est divisé en trois zones par des fonctions linéaires:
+
+- la zone bleue représente les fleurs setosa
+- la zone blanche représente les fleurs versicolor
+- la zone magenta représente les fleurs virginica
+
+Il ne faut pas oublier que chaque représentation a un certain taux d'erreur, affiché sur chaque graphique.
+
+Afin de connaître le type de fleur d'un nouvel individu, on peut voir ses caractéristiques.
+Grâce à ses spécificités, nous pourrons placer la fleur sur une des trois zones. 
+Par exemple, si un nouvel individu est placé sur la zone bleue, nous pouvons dire qu'il s'agit d'une "setosa". 
+
+$\ $
+
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+
+################## il faut estimer pi^, u^,sigma^ 
+
+n= length(echa) # nombre d'individus pris pour faire la prédiction 
+K=3 # nombre de classes
+
+####### n_k
+n_k<-rep(0,K) # vecteur vide
+for(j in 1:length(n_k) ){ #  1:3
+  
+  for( k in 1:length(echa)) { # parmi les 110 valeurs 
+    if (val_predicteur[k,5] ==j)
+        n_k[j]=n_k[j]+1
+  }
+}
+#n_k
+######## pi_k
+pi_k<-rep(0,K) # vecteur vide
+for(j in 1:length(n_k) ){
+    pi_k[j] = n_k[j]/n
+}
+#pi_k
+
+####### u_k
+u_k<-matrix(data=0,nrow=K,ncol=4) # matrice vide
+S_i <- matrix(data = 0, nrow = K, ncol = 4) # matrice vide
+X<- matrix(data = 0, nrow = 1, ncol = 4)  # matrice vide
+
+for(j in 1:length(n_k) ){     
+    for( k in 1:length(echa)) { # parmi les 110 valeurs 
+      if (val_predicteur[k,5] ==j)
+        X<-matrix(as.numeric(unlist(val_predicteur[k,1:4])), nrow=nrow(val_predicteur[k,1:4]))
+        S_i[j,]=S_i[j,]+X
+    }
+  u_k[j,]<-S_i[j,]/n_k[j]
+}
+#S_i 
+#u_k
+
+##############  ANALYSE DISCRIMINANTE LINEAIRE
+
+########### sigma
+
+M<-matrix(data = 0, nrow = 4, ncol = 4) # matrice vide
+sigma<-matrix(data = 0, nrow = 4, ncol = 4) # matrice vide
+
+for(j in 1:length(n_k)){    
+   for(k in 1:length(echa) ){
+      if(val_predicteur[k,5] == j) {    
+        X<-matrix(as.numeric(unlist(val_predicteur[k,1:4])), nrow=nrow(val_predicteur[k,1:4]))
+        M <- M +  t(X - u_k[j,])%*%(X - u_k[j,]) 
+      }
+   }
+  
+}
+
+sigma <- M/(n-K)
+
+###### La fonction linéaire discriminante (Delta)
+
+
+NR <- matrix(data=0,ncol=4, nrow = 150- length(echa) ) # petit x
+delta_k <- matrix(data=0,ncol=3, nrow = 150- length(echa) )
+Delta <- matrix(data=0,ncol=1, nrow = 150- length(echa) )
+
+
+for(i in 1:(150- length(echa)) ) {  # 40
+    
+  for(j in 1:length(n_k) ) {   # 3
+      NR[i,]<-matrix(as.numeric(unlist(val_non_predicteur[i,1:4])), nrow=nrow(val_non_predicteur[i,1:4]))
+
+      delta_k[i,j]<-log(pi_k[j])+ NR[i,]%*%inv(sigma)%*%( as.matrix(u_k[j,]) ) - 0.5*t( as.matrix( u_k[j,] ) )%*%inv(sigma)%*%( as.matrix( u_k[j,] ) )
+  }
+  
+  # On choisit le maximum de vraisemblance
+  for(j in 1:length(n_k) ) {  # 3
+    if ( max(delta_k[i,]) == delta_k[i,j] )
+      Delta[i] <-j
+  }    
+}
+
+#Delta
+
+## Nombre de prévisions correctes par classe
+
+vec_bien_pred <- rep(0, length(n_k))
+for( k in 1: length(n_k)){ # 3
+  for (i in 1:(150-length(echa)) ){ # 40
+  
+    if( Delta[i] == val_non_predicteur[i,5] && val_non_predicteur[i,5]==k )
+      vec_bien_pred[k]<- vec_bien_pred[k] + 1 
+  
+  }
+}
+
+```
+
+$\ $
+
+**Commentaires**
+
+$\ $
+
+
+A l'aide de l'algorithme de l'ADL qu'on a programmé, on obtient les résultats suivants:
+
+- On trouve qu'il y a ... setosa qui ont été prédites parmi ... de notre échantillon de 40 fleurs.
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+ c(vec_bien_pred[1], sum(val_non_predicteur[,5]==1) )
+```
+
+- On trouve donc ... versicolor prédites parmi ... de notre échantillon de 40 fleurs.
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+ c(vec_bien_pred[2], sum(val_non_predicteur[,5]==2) )
+```
+
+- Enfin, on trouve ... virginica prédites parmi ... de notre échantillon de 40 fleurs.
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+ c(vec_bien_pred[3], sum(val_non_predicteur[,5]==3) )
+```
+
+Notre algorithme nous donne une erreur globale de: 
+
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+## Erreur globale
+
+rr=1- sum (vec_bien_pred)/sum(c(sum(val_non_predicteur[,5]==1),sum(val_non_predicteur[,5]==2),sum(val_non_predicteur[,5]==3)))
+rr
+```
+$\ $
+
+#**II. Analyse Discriminante Quadratique**
+
+$\ $
+
+##**a) Présentation de l'Analyse Discriminante Quadratique**
+
+$\ $
+
+L'analyse discriminante quadratique a le même objectif que l'ADL, c'est-à-dire qu'elle permet d'expliquer et prédire les valeurs d'une variable qualitative, notée Y, à partir de variables explicatives quantitatives et/ou qualitatives, notées $X=(X_1,.....X_p)$.
+
+Cette méthode s'appuie également sur deux hypothèses:
+
+- les densités conditionnelles sont gaussiennes.
+
+- l'hétéroscédasticité, c'est-à-dire que les matrices de variance-covariance des variables explicatives sont différentes/hétérogènes -les $\Sigma_k$ différents - pour chaque groupe.
+
+Si ces 2 hypothèses sont vérifiées, alors on aboutit à des fonctions discriminantes quadratiques.
+
+En ADQ, les probabilités sont toujours calculées à l'aide du théorème de Bayes, en faisant pour chaque groupe l'hypothèse de normalité $Y|X=k \sim \mathcal{N}(\mu_k, \Sigma_k)$ pour $k=1,...,K$.
+
+$\ $
+
+Afin de trouver la probabilité conditionnelle - $\mathbb P(Y=k|X=x)$ - la plus grande, une méthode consiste à chercher le maximum de vraisemblance comme pour l'ADL:
+
+  $$\hat Y = \underset{1≤k≤K}{\text{argmax}} \ \mathbb P(Y=k|X) \ \Longleftrightarrow \ \hat Y = \underset{1≤k≤K}{\text{argmax}} \ log \mathbb P(Y=k|X) \ \ (3)$$ 
+
+
+$\ $
+
+**Analyse de la vraisemblance dans le cas où il y a deux classes (K = 2)**
+      
+$\ $      
+Soit un échantillon dans lequel il existe deux classes, notées $C_k$ et $C_l$.
+Il suffit d'analyser le log-ratio suivant, que l'on note R:
+
+$$R= log \frac{\mathbb P(Y=k | X=x)}{\mathbb P(Y=l | X=x)}= log\frac{\pi_k}{\pi_l}+log\frac{f_k(x)}{f_l(x)}$$
+$$R = log\frac{\pi_k}{\pi_l} -\frac{\ 1}{\ 2} \ ^t(x-\mu_k)\Sigma_k^{-1}(x-\mu_k)+\frac{\ 1}{\ 2} \  ^t(x-\mu_l)\Sigma_l ^{-1 }(x-\mu_l)$$
+
+$\ $
+    
+- Si $\ R$ > 0, alors $P(Y=k | X=x)>\mathbb P(Y=l | X=x)$. Donc Y appartient à la classe $C_k$.
+
+- Si $\ R$ < 0, alors $P(Y=k | X=x)<\mathbb P(Y=l | X=x)$. Donc Y appartient à la classe $C_l$.
+
+$\ $
+
+**Analyse de la vraisemblance dans le cas où il y a plus de deux classes (K > 2)**
+   
+
+$\ $
+
+Une autre manière de résoudre (3) serait d'utiliser la fonction quadratique discriminante.
+Cela revient à choisir:
+
+$$\hat Y = \underset{1≤k≤K}{\text{argmax}}\ \delta_k(x) \ (4)  \\  avec: \ \ \delta_k(x)= log(\pi_k) -\frac {1}{2} log(\det \Sigma_k )- \frac{1}{2} \ ^t(x-\mu_k)\Sigma_k^{-1}(x-\mu_k)$$
+
+
+#### **Les estimations**
+
+
+- ${ \hat\pi_k}=\frac{\ n_k}{\ n}$
+
+- ${ \hat\mu_k}=\frac{\ 1}{\ n_k}\sum_{i\in {C_k}} X_i$
+
+- ${ \hat\Sigma_k}=\frac{\ 1}{\ n_k-1}\sum_{i\in {C_k}} (X_i - \hat\mu_k) ^t(X_i - \hat\mu_k)$ (Estimateur sans biais)
+
+
+$\ $
+
+## **b) Algorithme de l'ADQ appliqué à la base de données Iris** 
+
+$\ $
+
+Dans cette partie, nous nous intéressons également à la base de données Iris et nous allons comparer, à travers ce dataset, l'ADQ à l'ADL.
+
+
+Maintenant, nous allons analyser la distribution des 110 fleurs par rapport à leurs variables explicatives afin de pouvoir se placer dans les hypothèses de l’ADQ (densités gaussiennes et hétéroscédasticité).
+
+$\ $
+
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+
+a1<-ggplot(iris[echa,])+geom_density(aes( x=Petal.Length, fill=Species ),alpha=0.25)
+a3<-ggplot(iris[echa,])+geom_density(aes( x=Petal.Width, fill=Species ),alpha=0.25)
+a2<-ggplot(iris[echa,])+geom_density(aes( x=Sepal.Length, fill=Species ),alpha=0.25)
+a4<-ggplot(iris[echa,])+geom_density(aes( x=Sepal.Width, fill=Species ),alpha=0.25)
+
+plot_grid(a1, a2, a3,a4, ncol =2, nrow = 2)+ggtitle('Distribution des fleurs par rapport à ses variables explicatives')+ theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+$\ $
+
+On constate que les densités sont gaussiennes et les variances des fleurs “setosa”, "versicolor" et “virginica” sont différentes. 
+On peut donc supposer les deux conditions de l'ADQ et ainsi continuer notre analyse.
+
+$\ $
+
+
+Afin de représenter les frontières de décision, on utilise la commande "partimat" du package "KlarR".
+$\ $
+
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+
+partimat(Species~., data=iris[echa,], method='qda',main="Frontières de décision pour l'ADQ")
+```
+
+$\ $
+
+Nous constatons que chaque graphique est divisé en trois zones par des fonctions quadratiques:
+
+- la zone bleue représente les fleurs setosa
+- la zone blanche représente les fleurs versicolor
+- la zone magenta représente les fleurs virginica
+
+$\ $
+
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+
+######################  ANALYSE DISCRIMINANTE QUADRATIQUE
+
+
+###### sigma_k
+
+M<-matrix(data = 0, nrow = 4, ncol = 4) # matrice vide
+
+sigma_1<-matrix(data = 0, nrow = 4, ncol = 4) # matrice vide
+sigma_2<-matrix(data = 0, nrow = 4, ncol = 4)
+sigma_3<-matrix(data = 0, nrow = 4, ncol = 4)
+
+for(j in 1:length(n_k)){    
+  for(k in 1:length(echa) ){
+    if(val_predicteur[k,5] == j) {    
+      X<-matrix(as.numeric(unlist(val_predicteur[k,1:4])), nrow=nrow(val_predicteur[k,1:4]))
+      M <-M+ t(X - u_k[j,])%*%(X - u_k[j,]) 
+    }
+  }
+  
+  if(j==1){ # classe 1
+     sigma_1 <- M/(n_k[j]-1)
+     M<-0
+  }
+  if(j==2){ 
+    sigma_2 <- M/(n_k[j]-1)
+    M<-0 
+  }
+  if(j==3){ 
+    sigma_3 <- M/(n_k[j]-1)
+    M<-0 
+  }
+}
+
+###### La fonction discriminante quadratique(Delta)
+
+NR <- matrix(data=0,ncol=4, nrow = 150- length(echa) ) # petit x
+delta_k <- matrix(data=0,ncol=3, nrow = 150- length(echa) )
+Delta <- matrix(data=0,ncol=1, nrow = 150- length(echa) )
+
+
+for(i in 1:(150- length(echa)) ) {  # 40
+  
+  for(j in 1:length(n_k) ) {   # 3
+    NR[i,]<-matrix(as.numeric(unlist(val_non_predicteur[i,1:4])), nrow=nrow(val_non_predicteur[i,1:4]))
+    
+    if (j==1){ # classe 1
+    delta_k[i,j]<-log(pi_k[j]) -0.5*(log(det(sigma_1))) -0.5*( NR[i,]-u_k[j,] )%*%inv(sigma_1)%*%( as.matrix( NR[i,]-u_k[j,]) )
+    }
+    if (j==2){ 
+      delta_k[i,j]<-log(pi_k[j]) -0.5*(log(det(sigma_2))) -0.5*( NR[i,]-u_k[j,] )%*%inv(sigma_2)%*%( as.matrix( NR[i,]-u_k[j,]) )
+    }
+    if (j==3){ 
+      delta_k[i,j]<-log(pi_k[j]) -0.5*(log(det(sigma_3))) -0.5*( NR[i,]-u_k[j,] )%*%inv(sigma_3)%*%( as.matrix( NR[i,]-u_k[j,]) )
+    }
+    
+  }
+  
+  # On choisit le maximum de vraisemblance
+  for(j in 1:length(n_k) ) {  # 3
+    if ( max(delta_k[i,]) == delta_k[i,j] )
+      Delta[i] <-j
+  }    
+}
+# Delta
+
+## Nombre de prévisions correctes par classe
+
+vec_bien_pred <- rep(0, length(n_k))
+for( k in 1: length(n_k)){ # 3
+  for (i in 1:(150-length(echa)) ){ # 40
+    
+    if( Delta[i] == val_non_predicteur[i,5] && val_non_predicteur[i,5]==k )
+      vec_bien_pred[k]<- vec_bien_pred[k] + 1 
+  }
+}
+```
+
+
+$\ $
+
+**Commentaires**
+
+$\ $
+
+A l'aide de l'algorithme de l'ADQ qu'on a programmé, on obtient les résultats suivants:
+
+- On trouve qu'il y a ... setosa qui ont bien été prédites parmi ... de notre échantillon de 40 fleurs.
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+ c(vec_bien_pred[1], sum(val_non_predicteur[,5]==1) )
+```
+
+- On trouve qu'il y a ... versicolor qui ont été bien prédites parmi ... de notre échantillon de 40 fleurs.
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+ c(vec_bien_pred[2], sum(val_non_predicteur[,5]==2) )
+```
+
+- On trouve qu'il y a ... virginica qui ont été bien prédites parmi ... de notre échantillon de 40 fleurs.
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+ c(vec_bien_pred[3], sum(val_non_predicteur[,5]==3) )
+```
+
+Notre algorithme nous donne une erreur globale de: 
+
+```{r,  echo=FALSE, message= FALSE,warning=FALSE }
+## Erreur globale
+
+rr=1- sum (vec_bien_pred)/sum(c(sum(val_non_predicteur[,5]==1),sum(val_non_predicteur[,5]==2),sum(val_non_predicteur[,5]==3)))
+rr
+```
+
+$\ $
+
+##**Conclusion**
+
+$\ $
+
+Tout d'abord, nous avons pu définir dans ce rapport un cadre de travail
+sur lequel se baser en présentant l'analyse discriminante et plus
+particulièrement en comparant l'ADL et l'ADQ.
+
+\(\ \)
+
+Pour déterminer le maximum de vraisemblance, l'ADL utilise la fonction
+linéaire discriminante alors que l'ADQ utilise la fonction quadratique
+discriminante. Donc, la frontière de décision pour chacune des deux
+méthodes est différente et nous avons bien pu le remarquer sur les
+graphiques que nous avons tracé.
+
+\(\ \)
+
+En ce qui concerne l'efficacité des deux méthodes, l'ADQ est plus
+performante que l'ADL quand les variances des classes sont différentes.
+Néanmoins, l'ADL donne des résultats satisfaisants lorsque les
+hypothèses de gaussianité et d'égalité des variances sont vérifiées.
+
+\(\ \)
+
+De plus, nous avons pu constater l'efficacité de chacune des deux
+méthodes grâce à notre programme effectué à partir de la base de données
+*Iris*. A travers cet exemple, nous avons pu montrer à plusieurs
+reprises que c'est l'analyse discriminante quadratique qui a été la plus
+efficace. 
+En effet, l'ADQ a été plus précise que l'ADL dans la prédiction de l'échantillon choisi, puisque l'hypothèse d'hétéroscédasticité a bien été vérifiée dans l'ADQ, contrairement à l'hypothèse d'homoscédasticité que nous avons admis dans l'ADL.
+
+\(\ \)
+
+Enfin, nous n'avons pas eu la possibilité d'étudier et utiliser toutes
+les techniques d'explication et de prédiction disponibles tel que la
+régression logistique. Certes, nous aurions pu comparer l'ADL et la
+régression logistique dans le but de confronter leur performance
+respectives, mais par manque d'espace dans notre rapport,
+nous n'avons pas pu étudier cette approche.
